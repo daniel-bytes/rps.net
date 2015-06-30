@@ -73,15 +73,18 @@ namespace Rps.Domain.Model
             {
                 points.Add(token.Point.AddX(-1));
             }
-            else if (token.Point.Y > 0)
+            
+            if (token.Point.Y > 0)
             {
                 points.Add(token.Point.AddY(-1));
             }
-            else if (token.Point.X < (Bounds.Rows - 1))
+            
+            if (token.Point.X < (Bounds.Rows - 1))
             {
                 points.Add(token.Point.AddX(1));
             }
-            else if (token.Point.Y < (Bounds.Cols - 1))
+            
+            if (token.Point.Y < (Bounds.Cols - 1))
             {
                 points.Add(token.Point.AddY(1));
             }
