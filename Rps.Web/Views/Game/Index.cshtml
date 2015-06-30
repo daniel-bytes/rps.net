@@ -1,0 +1,19 @@
+﻿@model Rps.Web.Models.GameIndexViewModel
+
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("NewSinglePlayer", "Game", FormMethod.Post, new { id = "new-game-form" }))
+        {
+            <button type="submit">New Single Player Game</button>
+        }
+    </div>
+    @if (Model.HasCurrentSinglePlayerGame)
+    { 
+    <div class="col-md-4">
+        @using (Html.BeginForm("Play", "Game", new { id = Model.CurrentSinglePlayerGame }, FormMethod.Get, new { id = "resume-form" }))
+        {
+            <button type="submit">Resume Current Game</button>
+        }
+    </div>
+    }
+</div>
