@@ -40,6 +40,64 @@ namespace Rps.Domain.Model
             this.Point = point;
         }
 
+
+
+        public GameMoveResultType Attack(Token defender)
+        {
+            var attacker = this;
+
+            if (attacker.TokenType != Model.TokenType.Rock &&
+                attacker.TokenType != Model.TokenType.Paper &&
+                attacker.TokenType != Model.TokenType.Scissor)
+            {
+                throw new Exceptions.InvalidMoveException(
+                    string.Format("Invalid move for token with ID {0}.  Cannot attack with Token Type {1}.", attacker.ID, attacker.TokenType)
+                    );
+            }
+
+            if (defender == null || defender.TokenType == TokenType.Empty)
+            {
+                return GameMoveResultType.TokenMove;
+            }
+            else
+            {
+                switch (defender.TokenType)
+                {
+                    case TokenType.Bomb:
+                        return GameMoveResultType.BothLose;
+
+                    case TokenType.Flag:
+                        return GameMoveResultType.GameOver;
+
+                    case TokenType.Rock:
+                        if (attacker.TokenType == TokenType.Paper)
+                            return GameMoveResultType.AttackerWins;
+                        else if (attacker.TokenType == TokenType.Scissor)
+                            return GameMoveResultType.DefenderWins;
+                        else
+                            return GameMoveResultType.BothLose;
+
+                    case TokenType.Paper:
+                        if (attacker.TokenType == TokenType.Scissor)
+                            return GameMoveResultType.AttackerWins;
+                        else if (attacker.TokenType == TokenType.Rock)
+                            return GameMoveResultType.DefenderWins;
+                        else
+                            return GameMoveResultType.BothLose;
+
+                    case TokenType.Scissor:
+                        if (attacker.TokenType == TokenType.Rock)
+                            return GameMoveResultType.AttackerWins;
+                        else if (attacker.TokenType == TokenType.Paper)
+                            return GameMoveResultType.DefenderWins;
+                        else
+                            return GameMoveResultType.BothLose;
+                }
+
+                throw new InvalidOperationException(string.Format("Invalid move, unknown state.  Token {0} to Token {1}.", attacker.ID, defender.ID));
+            }
+        }
+
         public bool Equals(Token other)
         {
             if (other == null)

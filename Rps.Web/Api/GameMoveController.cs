@@ -28,7 +28,7 @@ namespace Rps.Web.Api
 
             var point = new DomainModel.Point(model.MoveToX, model.MoveToY);
             var moveResult = await this.gameService.PerformMoveAsync(model.GameID, player.ID, model.TokenID, point);
-            var result = new GameMoveResultModel(model.GameID, moveResult);
+            var result = new GameMoveResultModel(model.GameID, player, moveResult);
 
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }

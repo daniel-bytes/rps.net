@@ -26,5 +26,25 @@ namespace Rps.Domain.Model
             this.Active = active;
             this.GameBoard = gameBoard;
         }
+
+        public Player GetPlayer(string id)
+        {
+            if (Player1.ID == id)
+            {
+                return Player1;
+            }
+            else if (Player2.ID == id)
+            {
+                return Player2;
+            }
+
+            throw new ArgumentException("Invalid player ID " + id + ".", "id");
+        }
+
+        public Game SetGameOver()
+        {
+            this.Active = false;
+            return this;
+        }
     }
 }

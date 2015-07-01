@@ -11,11 +11,19 @@
     }
 
     $scope.$on('gameboard.move', function (evt, data) {
-        console.log('gameboard.move handler:');
-        console.log(data.attacker);
-        console.log(data.defender);
-        gameService.move(data.attacker.id, $scope.gameid, data.defender.x, data.defender.y, function (result) {
+        gameService.move(data.attacker.id, $scope.gameid, data.defender.x, data.defender.y, function (moveResult) {
+            console.log(moveResult);
 
+            if (moveResult.Message) {
+                alert(moveResult.Message);
+            }
+
+            if (moveResult.Result === tokenService.moveResults.GameOver) {
+                $window.location.href = "/game";
+            }
+            else {
+                LoadTokens();
+            }
         });
     });
 

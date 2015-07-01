@@ -26,7 +26,7 @@ function GameService(tokenService, gameResource, gameMoveResource) {
                     }
                     rows.push(row);
                 }
-                console.log(rows);
+
                 callback(rows);
             });
         },
@@ -41,21 +41,10 @@ function GameService(tokenService, gameResource, gameMoveResource) {
                 MoveToY: y
             };
             return gameMoveResource.save(model, function (data) {
-                switch (data.Result) {
-                    case tokenService.moveResultTypes.TokenMove.id:
-                    case tokenService.moveResultTypes.AttackerWins.id:
-                    case tokenService.moveResultTypes.DefenderWins.id:
-                    case tokenService.moveResultTypes.BothLose.id:
-                        self.load(gameid, callback);
-                        break;
-                    case tokenService.moveResultTypes.GameOver.id:
-                        // TODO!
-                        alert("Game Over!");
-                        break;
-                }
+                callback(data);
             }, function (err) {
                 console.log(err);
-                var message = err.data.ExceptionMessage ? err.data.ExceptionMessage : "An error has occurred";
+                var message = err.data && err.data.ExceptionMessage ? err.data.ExceptionMessage : "An error has occurred";
                 alert(message);
             });
         }

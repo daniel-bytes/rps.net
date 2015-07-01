@@ -108,77 +108,32 @@ namespace Rps.Domain.Model
 
             var defender = this.Get(moveTo);
 
-            var result = GetTokenAttackResult(token, defender);
+            var result = token.Attack(defender);
 
             switch(result)
             {
-                case GameMoveResult.AttackerWins:
+                case GameMoveResultType.AttackerWins:
                     Remove(defender.Point);
                     token.SetPoint(moveTo);
                     break;
-                case GameMoveResult.DefenderWins:
+                case GameMoveResultType.DefenderWins:
                     Remove(token.Point);
                     break;
-                case GameMoveResult.BothLose:
+                case GameMoveResultType.BothLose:
                     Remove(token.Point);
                     Remove(defender.Point);
                     break;
-                case GameMoveResult.TokenMove:
+                case GameMoveResultType.TokenMove:
                     token.SetPoint(moveTo);
                     break;
             }
 
-            return result;
+            return new GameMoveResult(result, token, defender);
         }
 
         public static GameBoard Empty()
         {
             return new GameBoard(new GameProperties(), Enumerable.Empty<Token>());
-        }
-
-        public static GameMoveResult GetTokenAttackResult(Token attacker, Token defender)
-        {
-            if (defender == null || defender.TokenType == TokenType.Empty)
-            {
-                return GameMoveResult.TokenMove;
-            }
-            else
-            {
-                switch (defender.TokenType)
-                {
-                    case TokenType.Bomb:
-                        return GameMoveResult.BothLose;
-
-                    case TokenType.Flag:
-                        return GameMoveResult.GameOver;
-
-                    case TokenType.Rock:
-                        if (attacker.TokenType == TokenType.Paper)
-                            return GameMoveResult.AttackerWins;
-                        else if (attacker.TokenType == TokenType.Scissor)
-                            return GameMoveResult.DefenderWins;
-                        else
-                            return GameMoveResult.BothLose;
-
-                    case TokenType.Paper:
-                        if (attacker.TokenType == TokenType.Scissor)
-                            return GameMoveResult.AttackerWins;
-                        else if (attacker.TokenType == TokenType.Rock)
-                            return GameMoveResult.DefenderWins;
-                        else
-                            return GameMoveResult.BothLose;
-
-                    case TokenType.Scissor:
-                        if (attacker.TokenType == TokenType.Rock)
-                            return GameMoveResult.AttackerWins;
-                        else if (attacker.TokenType == TokenType.Paper)
-                            return GameMoveResult.DefenderWins;
-                        else
-                            return GameMoveResult.BothLose;
-                }
-
-                throw new InvalidOperationException(string.Format("Invalid move, unknown state.  Token {0} to Token {1}.", attacker.ID, defender.ID));
-            }
         }
 
         public static GameBoard New(

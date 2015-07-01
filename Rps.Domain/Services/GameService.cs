@@ -52,7 +52,18 @@ namespace Rps.Domain.Services
             // Perform move
             var result = game.GameBoard.MoveToken(attacker, point);
 
+            if (result.ResultType == GameMoveResultType.GameOver)
+            {
+                game.SetGameOver();
+            }
+
             await repository.SaveAsync(game);
+
+            if (result.ResultType == GameMoveResultType.GameOver)
+            {
+                var winner = game.GetPlayer(attacker.PlayerID);
+                result = result.WithWinner(winner);
+            }
 
             return result;
         }

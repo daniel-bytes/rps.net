@@ -10,6 +10,15 @@
             OtherPlayer: { id: 100, name: "X" }
         },
 
+        moveResults: {
+            Nothing: 0,
+            TokenMove: 1,
+            AttackerWins: 2,
+            DefenderWins: 3,
+            BothLose: 4,
+            GameOver: 5
+        },
+
         getTokenTypeByID: function (id) {
             switch (id) {
                 case 0: return this.tokenTypes.None;
@@ -20,15 +29,6 @@
                 case 5: return this.tokenTypes.Flag;
                 case 100: return this.tokenTypes.OtherPlayer;
             }
-        },
-
-        moveResultTypes: {
-            Nothing: { id: 0 },
-            TokenMove: { id: 1 },
-            AttackerWins: { id: 2 },
-            DefenderWins: { id: 3 },
-            BothLose: { id: 4 },
-            GameOver: { id: 5 }
         }
     };
 }

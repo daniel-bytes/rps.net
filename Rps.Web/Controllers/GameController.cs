@@ -42,7 +42,7 @@ namespace Rps.Web.Controllers
             return RedirectToAction("Play", new { id = game.ID });
         }
 
-        public async Task<ActionResult> Play(long id)
+        public ActionResult Play(long id)
         {
             ViewBag.GameID = id;
             return View();
