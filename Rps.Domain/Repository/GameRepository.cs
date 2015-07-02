@@ -72,6 +72,8 @@ namespace Rps.Domain.Repository
                 UpdatedAtUtc = timestamp,
                 NumRows = game.GameBoard.NumRows,
                 NumCols = game.GameBoard.NumCols,
+                RowsPerPlayer = game.GameBoard.Properties.RowsPerPlayer,
+                BombsPerPlayer = game.GameBoard.Properties.BombsPerPlayer,
                 Active = true,
                 Tokens = (from token in game.GameBoard.GetTokens()
                             select new Token
@@ -107,6 +109,8 @@ namespace Rps.Domain.Repository
             entity.Active = game.Active;
             entity.NumRows = game.GameBoard.NumRows;
             entity.NumCols = game.GameBoard.NumCols;
+            entity.RowsPerPlayer = game.GameBoard.Properties.RowsPerPlayer;
+            entity.BombsPerPlayer = game.GameBoard.Properties.BombsPerPlayer;
             entity.SinglePlayerMode = game.Player2.IsComputerControlled;
             entity.UpdatedAtUtc = timestamp;
 

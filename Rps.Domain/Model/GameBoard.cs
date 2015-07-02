@@ -23,6 +23,7 @@ namespace Rps.Domain.Model
             }
         }
 
+        public GameProperties Properties { get { return properties; } }
         public Bounds Bounds { get { return properties.Bounds; } }
         public int NumRows { get { return properties.Bounds.Rows; } }
         public int NumCols { get { return properties.Bounds.Cols; } }
