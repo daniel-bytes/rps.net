@@ -24,15 +24,19 @@ namespace Rps.Domain.Repository
             var entity = await context.Games.AsNoTracking().SingleAsync(x => x.ID == id);
             entity.Tokens = await context.Tokens.AsNoTracking().Where(x => x.GameID == id).ToListAsync();
 
-            var player1 = new Model.Player(entity.Player1ID, entity.Player1Name, false);
-            var player2 = new Model.Player(entity.Player2ID, entity.Player2Name, entity.SinglePlayerMode);
+            var players = new[] { 
+                                new Model.Player(entity.Player1ID, entity.Player1Name, false), 
+                                new Model.Player(entity.Player2ID, entity.Player2Name, entity.SinglePlayerMode) 
+                            };
 
             var bounds = new Model.Bounds(entity.NumRows, entity.NumCols);
             var properties = new Model.GameProperties(bounds, entity.RowsPerPlayer, entity.BombsPerPlayer);
+            var status = Model.GameStatus.CreateFromEntity(entity, players);
+
             var tokens = entity.Tokens.Select(x => new Model.Token(x.ID, x.PlayerID, (Model.TokenType)x.TokenType, x.Row, x.Col));
             var gameBoard = new Model.GameBoard(properties, tokens);
 
-            var game = new Model.Game(entity.ID, player1, player2, entity.Active, gameBoard);
+            var game = new Model.Game(entity.ID, players[0], players[1], status, gameBoard);
 
             return game;
         }
@@ -49,11 +53,15 @@ namespace Rps.Domain.Repository
 
             var games = await query.ToListAsync();
 
-            return (from result in games
-                    select new Model.Game(result.ID,
-                                          new Model.Player(result.Player1ID, result.Player1Name, false),
-                                          new Model.Player(result.Player2ID, result.Player2Name, result.SinglePlayerMode),
-                                          result.Active,
+            return (from entity in games
+                    let players = new[] { 
+                                new Model.Player(entity.Player1ID, entity.Player1Name, false), 
+                                new Model.Player(entity.Player2ID, entity.Player2Name, entity.SinglePlayerMode) 
+                            }
+                    select new Model.Game(entity.ID,
+                                          players[0],
+                                          players[1],
+                                          Model.GameStatus.CreateFromEntity(entity, players),
                                           Model.GameBoard.Empty())).ToList();
         }
 
@@ -74,6 +82,7 @@ namespace Rps.Domain.Repository
                 NumCols = game.GameBoard.NumCols,
                 RowsPerPlayer = game.GameBoard.Properties.RowsPerPlayer,
                 BombsPerPlayer = game.GameBoard.Properties.BombsPerPlayer,
+                CurrentPlayerID = game.Player1.ID,
                 Active = true,
                 Tokens = (from token in game.GameBoard.GetTokens()
                             select new Token
@@ -92,7 +101,9 @@ namespace Rps.Domain.Repository
 
             await context.SaveChangesAsync();
 
-            return new Model.Game(model.ID, game.Player1, game.Player2, game.Active, game.GameBoard);
+            var players = new[] { game.Player1, game.Player2 };
+
+            return new Model.Game(model.ID, game.Player1, game.Player2, Model.GameStatus.CreateFromEntity(model, players), game.GameBoard);
         }
 
         public async Task SaveAsync(Model.Game game)
@@ -106,7 +117,10 @@ namespace Rps.Domain.Repository
             entity.Player1Name = game.Player1.Name;
             entity.Player2ID = game.Player2.ID;
             entity.Player2Name = game.Player2.Name;
-            entity.Active = game.Active;
+            entity.Active = game.GameStatus.GameActive;
+            entity.CurrentPlayerID = (game.GameStatus.CurrentPlayer != null ? game.GameStatus.CurrentPlayer.ID : null);
+            entity.GameResultID = (int)game.GameStatus.CurrentMoveResult;
+            entity.WinnerID = (game.GameStatus.Winner != null ? game.GameStatus.Winner.ID : null);
             entity.NumRows = game.GameBoard.NumRows;
             entity.NumCols = game.GameBoard.NumCols;
             entity.RowsPerPlayer = game.GameBoard.Properties.RowsPerPlayer;

@@ -23,7 +23,7 @@ namespace Rps.Domain.Services
             return await this.repository.GetAsync(id);
         }
 
-        public async Task<GameMoveResult> PerformMoveAsync(long id, string playerID, long tokenID, Point point)
+        public async Task<Game> PerformMoveAsync(long id, string playerID, long tokenID, Point point)
         {
             var game = await this.repository.GetAsync(id);
             var attacker = game.GameBoard.GetByID(tokenID);
@@ -50,22 +50,29 @@ namespace Rps.Domain.Services
             }
 
             // Perform move
-            var result = game.GameBoard.MoveToken(attacker, point);
-
-            if (result.ResultType == GameMoveResultType.GameOver)
-            {
-                game.SetGameOver();
-            }
+            var move = new GameMove(attacker, point);
+            
+            game.MoveToken(move);
 
             await repository.SaveAsync(game);
 
-            if (result.ResultType == GameMoveResultType.GameOver)
-            {
-                var winner = game.GetPlayer(attacker.PlayerID);
-                result = result.WithWinner(winner);
-            }
+            return game;
+        }
 
-            return result;
+        public async Task<Game> PerformComputerMoveAsync(long id)
+        {
+            var game = await this.repository.GetAsync(id);
+            var player = game.GetPlayer(Player.ComputerPlayerID);
+
+            var playerStrategy = player.GetPlayerStrategy();
+            var move = playerStrategy.GetNextMove(game.GameBoard, player);
+
+            // Perform move
+            game.MoveToken(move);
+
+            await repository.SaveAsync(game);
+
+            return game;
         }
 
         public async Task<IEnumerable<Game>> GetPlayerActiveGamesAsync(Player player)
@@ -78,8 +85,8 @@ namespace Rps.Domain.Services
         public async Task<Game> CreateSinglePlayerGameAsync(Player player, GameProperties properties)
         {
             var gameBoard = GameBoard.New(properties, player, Player.ComputerPlayer);
-
-            var game = new Game(0, player, Player.ComputerPlayer, false, gameBoard);
+            var status = GameStatus.CreateActive(player, Player.ComputerPlayer);
+            var game = new Game(0, player, Player.ComputerPlayer, status, gameBoard);
             var results = await repository.CreateAsync(game);
 
             return results;

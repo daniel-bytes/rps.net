@@ -10,20 +10,36 @@
         });
     }
 
+    function HandleMoveResult(r) {
+        if (r.Message) {
+            alert(r.Message);
+        }
+
+        var token = _.find($scope.tokens, function (t) { return t.id === r.AttackerTokenID; });
+
+        if (token) {
+            token.x = r.MoveToX;
+            token.y = r.MoveToY;
+        }
+
+        if (tokenService.isGameEndingMove(r.Result)) {
+            $window.location.href = "/game";
+        }
+    }
+
     $scope.$on('gameboard.move', function (evt, data) {
         gameService.move(data.attacker.id, $scope.gameid, data.defender.x, data.defender.y, function (moveResult) {
-            console.log(moveResult);
+            console.log(moveResult.Results);
 
-            if (moveResult.Message) {
-                alert(moveResult.Message);
-            }
+            HandleMoveResult(moveResult.Results[0]);
 
-            if (moveResult.Result === tokenService.moveResults.GameOver) {
-                $window.location.href = "/game";
-            }
-            else {
+            setTimeout(function () {
+                if (moveResult.Results.length > 1) {
+                    HandleMoveResult(moveResult.Results[1]);
+                }
+
                 LoadTokens();
-            }
+            }, 1000);
         });
     });
 

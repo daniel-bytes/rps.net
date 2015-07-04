@@ -65,7 +65,7 @@ namespace Rps.Domain.Tests
             Assert.AreEqual(GameMoveResultType.BothLose, result, "Rock vs Bomb should have correct result");
 
             result = attackerRock.Attack(defenderFlag);
-            Assert.AreEqual(GameMoveResultType.GameOver, result, "Rock vs Flag should have correct result");
+            Assert.AreEqual(GameMoveResultType.FlagCapturedByAttacker, result, "Rock vs Flag should have correct result");
 
             // Paper attacks
             result = attackerPaper.Attack(defenderRock);
@@ -84,7 +84,7 @@ namespace Rps.Domain.Tests
             Assert.AreEqual(GameMoveResultType.BothLose, result, "Paper vs Bomb should have correct result");
 
             result = attackerPaper.Attack(defenderFlag);
-            Assert.AreEqual(GameMoveResultType.GameOver, result, "Paper vs Flag should have correct result");
+            Assert.AreEqual(GameMoveResultType.FlagCapturedByAttacker, result, "Paper vs Flag should have correct result");
 
             // Scissor attacks
             result = attackerScissor.Attack(defenderRock);
@@ -103,7 +103,7 @@ namespace Rps.Domain.Tests
             Assert.AreEqual(GameMoveResultType.BothLose, result, "Scissor vs Bomb should have correct result");
 
             result = attackerScissor.Attack(defenderFlag);
-            Assert.AreEqual(GameMoveResultType.GameOver, result, "Scissor vs Flag should have correct result");
+            Assert.AreEqual(GameMoveResultType.FlagCapturedByAttacker, result, "Scissor vs Flag should have correct result");
         }
     }
 }

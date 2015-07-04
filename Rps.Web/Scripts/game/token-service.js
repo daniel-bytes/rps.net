@@ -16,7 +16,10 @@
             AttackerWins: 2,
             DefenderWins: 3,
             BothLose: 4,
-            GameOver: 5
+            FlagCaptured: 5,
+            AttackerOutOfPieces: 6,
+            DefenderOutOfPieces: 7,
+            BothOutOfPieces: 8
         },
 
         getTokenTypeByID: function (id) {
@@ -29,6 +32,13 @@
                 case 5: return this.tokenTypes.Flag;
                 case 100: return this.tokenTypes.OtherPlayer;
             }
+        },
+
+        isGameEndingMove: function(id) {
+            return id === this.moveResults.FlagCaptured ||
+                id === this.moveResults.AttackerOutOfPieces ||
+                id === this.moveResults.DefenderOutOfPieces ||
+                id === this.moveResults.BothOutOfPieces;
         }
     };
 }

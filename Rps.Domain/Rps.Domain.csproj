@@ -48,11 +48,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\BasicPlayerStrategyV1.cs" />
+    <Compile Include="AI\IPlayerStrategy.cs" />
     <Compile Include="Config\DomainConfig.cs" />
     <Compile Include="Config\IDomainConfig.cs" />
     <Compile Include="Exceptions\InvalidMoveException.cs" />
     <Compile Include="Exceptions\InvalidPointException.cs" />
     <Compile Include="Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Extensions\GameExtensions.cs" />
+    <Compile Include="Migrations\201507041115572_GameStatus.cs" />
+    <Compile Include="Migrations\201507041115572_GameStatus.Designer.cs">
+      <DependentUpon>201507041115572_GameStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\initial_createtables.cs" />
     <Compile Include="Migrations\initial_createtables.Designer.cs">
       <DependentUpon>initial_createtables.cs</DependentUpon>
@@ -60,8 +67,10 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Game.cs" />
     <Compile Include="Model\GameBoard.cs" />
-    <Compile Include="Model\GameMoveResult.cs" />
+    <Compile Include="Model\GameMove.cs" />
+    <Compile Include="Model\GameMoveResultType.cs" />
     <Compile Include="Model\GameProperties.cs" />
+    <Compile Include="Model\GameStatus.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Bounds.cs" />
     <Compile Include="Model\Point.cs" />
@@ -78,6 +87,9 @@
     <Compile Include="Services\IGameService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201507041115572_GameStatus.resx">
+      <DependentUpon>201507041115572_GameStatus.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\initial_createtables.resx">
       <DependentUpon>initial_createtables.cs</DependentUpon>
     </EmbeddedResource>

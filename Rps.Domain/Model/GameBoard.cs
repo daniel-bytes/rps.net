@@ -1,9 +1,8 @@
-﻿using Rps.Domain.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Rps.Domain.Exceptions;
+using Rps.Domain.Extensions;
 
 namespace Rps.Domain.Model
 {
@@ -96,40 +95,6 @@ namespace Rps.Domain.Model
                        || tokenAtPoint.PlayerID != token.PlayerID
                     select point
                     ).ToList();
-        }
-
-        public GameMoveResult MoveToken(Token token, Point moveTo)
-        {
-            if (token.TokenType == TokenType.Empty || 
-                token.TokenType == TokenType.Flag ||
-                token.TokenType == TokenType.Bomb)
-            {
-                throw new InvalidMoveException(string.Format("Invalid move.  Token type {0} cannot be moved.", token.TokenType));
-            }
-
-            var defender = this.Get(moveTo);
-
-            var result = token.Attack(defender);
-
-            switch(result)
-            {
-                case GameMoveResultType.AttackerWins:
-                    Remove(defender.Point);
-                    token.SetPoint(moveTo);
-                    break;
-                case GameMoveResultType.DefenderWins:
-                    Remove(token.Point);
-                    break;
-                case GameMoveResultType.BothLose:
-                    Remove(token.Point);
-                    Remove(defender.Point);
-                    break;
-                case GameMoveResultType.TokenMove:
-                    token.SetPoint(moveTo);
-                    break;
-            }
-
-            return new GameMoveResult(result, token, defender);
         }
 
         public static GameBoard Empty()

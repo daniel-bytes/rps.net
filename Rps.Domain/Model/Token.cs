@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Rps.Domain.Extensions;
 
 namespace Rps.Domain.Model
 {
@@ -40,7 +41,10 @@ namespace Rps.Domain.Model
             this.Point = point;
         }
 
-
+        public bool IsMovable()
+        {
+            return this.TokenType.IsMovable();
+        }
 
         public GameMoveResultType Attack(Token defender)
         {
@@ -67,7 +71,7 @@ namespace Rps.Domain.Model
                         return GameMoveResultType.BothLose;
 
                     case TokenType.Flag:
-                        return GameMoveResultType.GameOver;
+                        return GameMoveResultType.FlagCapturedByAttacker;
 
                     case TokenType.Rock:
                         if (attacker.TokenType == TokenType.Paper)

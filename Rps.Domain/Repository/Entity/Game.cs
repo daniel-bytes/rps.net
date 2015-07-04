@@ -22,6 +22,9 @@ namespace Rps.Domain.Repository.Entity
         public int RowsPerPlayer { get; set; }
         public int BombsPerPlayer { get; set; }
         public bool Active { get; set; }
+        public string CurrentPlayerID { get; set; }
+        public string WinnerID { get; set; }
+        public int? GameResultID { get; set; }
         public ICollection<Token> Tokens { get; set; }
 
         public Game()

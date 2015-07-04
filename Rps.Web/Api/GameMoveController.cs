@@ -24,13 +24,22 @@ namespace Rps.Web.Api
         [Route("api/game/{id}/move")]
         public async Task<HttpResponseMessage> Post(GameMoveModel model)
         {
+            var results = new GameMoveResultsModel();
             var player = ApplicationUser.GetCurrentPlayer(this.User);
 
             var point = new DomainModel.Point(model.MoveToX, model.MoveToY);
-            var moveResult = await this.gameService.PerformMoveAsync(model.GameID, player.ID, model.TokenID, point);
-            var result = new GameMoveResultModel(model.GameID, player, moveResult);
+            var game = await this.gameService.PerformMoveAsync(model.GameID, player.ID, model.TokenID, point);
 
-            return Request.CreateResponse(HttpStatusCode.OK, result);
+            results.Add(player, game);
+
+            if (game.GameStatus.CurrentPlayer.IsComputerControlled)
+            {
+                game = await this.gameService.PerformComputerMoveAsync(model.GameID);
+
+                results.Add(game.GameStatus.CurrentPlayer, game);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, results);
         }
     }
 }

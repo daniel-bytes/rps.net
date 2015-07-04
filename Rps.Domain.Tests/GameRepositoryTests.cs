@@ -23,7 +23,7 @@ namespace Rps.Domain.Tests
 
             var games = new List<Game>
                    {
-                       new Repository.Entity.Game { ID = 1, Player1ID = "player1", Player2ID = "player2", NumRows = 1, NumCols = 1 }
+                       new Repository.Entity.Game { ID = 1, Player1ID = "player1", Player2ID = "player2", CurrentPlayerID = "player1", NumRows = 1, NumCols = 1 }
                    };
 
             var tokens = new List<Token>
@@ -59,6 +59,10 @@ namespace Rps.Domain.Tests
             var context = new Mock<IGameContext>();
             var gameSet = new Mock<IDbSet<Game>>();
             var tokenSet = new Mock<IDbSet<Token>>();
+            var players = new[] {
+                            new Model.Player("1", "player1", false),
+                            new Model.Player("2", "player2", true),
+            };
 
             gameSet.ConfigureDbSet(new List<Game>());
             tokenSet.ConfigureDbSet(new List<Token>());
@@ -72,9 +76,9 @@ namespace Rps.Domain.Tests
             var repo = new GameRepository(context.Object);
             var game = new Model.Game(
                             0,
-                            new Model.Player("1", "player1", false),
-                            new Model.Player("2", "player2", true),
-                            false,
+                            players[0],
+                            players[1],
+                            Model.GameStatus.CreateActive(players[0], players[1]),
                             new Model.GameBoard(new Model.GameProperties(), Enumerable.Empty<Model.Token>()));
 
             var result = repo.CreateAsync(game).Result;
@@ -93,6 +97,10 @@ namespace Rps.Domain.Tests
             var context = new Mock<IGameContext>();
             var gameSet = new Mock<IDbSet<Game>>();
             var tokenSet = new Mock<IDbSet<Token>>();
+            var players = new[] {
+                            new Model.Player("1", "player1", false),
+                            new Model.Player("2", "player2", true),
+            };
 
             var games = new List<Game>
                    {
@@ -117,9 +125,9 @@ namespace Rps.Domain.Tests
             var repo = new GameRepository(context.Object);
             var game = new Model.Game(
                             1,
-                            new Model.Player("1", "player1", false),
-                            new Model.Player("2", "player2", true),
-                            true,
+                            players[0],
+                            players[1],
+                            Model.GameStatus.CreateActive(players[0], players[1]),
                             new Model.GameBoard(new Model.GameProperties(new Model.Bounds(4, 4), 1, 1), new List<Model.Token>
                             {
                                 new Model.Token(100, "player1", Model.TokenType.Bomb, 1, 2),
@@ -138,7 +146,7 @@ namespace Rps.Domain.Tests
             Assert.AreEqual("player2", games[0].Player2Name, "player2 Name should be set");
             Assert.AreEqual(game.GameBoard.NumRows, games[0].NumRows, "NumRows should be set");
             Assert.AreEqual(game.GameBoard.NumCols, games[0].NumCols, "NumCols should be set");
-            Assert.AreEqual(game.Active, games[0].Active, "GameOver should be set");
+            Assert.AreEqual(game.GameStatus.GameActive, games[0].Active, "GameOver should be set");
 
             Assert.AreEqual(1, tokens[0].Row, "Row should be set");
             Assert.AreEqual(2, tokens[0].Col, "Col should be set");

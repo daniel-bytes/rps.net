@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Rps.Domain.AI;
+using System;
 
 namespace Rps.Domain.Model
 {
     public class Player
         : IEquatable<Player>
     {
+        private IPlayerStrategy playerStrategy;
+
         public const string ComputerPlayerID = "A4524AE5-F254-45D9-97B8-9F0A0FEE06C7";
         public const string ComputerPlayerName = "Computer";
 
@@ -23,6 +26,21 @@ namespace Rps.Domain.Model
             this.ID = id;
             this.Name = name;
             this.IsComputerControlled = isComputerControlled;
+        }
+
+        public IPlayerStrategy GetPlayerStrategy()
+        {
+            if (!IsComputerControlled)
+            {
+                throw new InvalidOperationException("Player strategy is not valid for human controlled player.");
+            }
+
+            if (playerStrategy == null)
+            {
+                playerStrategy = new BasicPlayerStrategyV1();
+            }
+
+            return playerStrategy;
         }
 
         public bool Equals(Player other)
