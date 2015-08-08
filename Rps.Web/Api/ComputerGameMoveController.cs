@@ -12,25 +12,25 @@ using DomainModel = Rps.Domain.Model;
 namespace Rps.Web.Api
 {
     [Authorize]
-    public class GameMoveController : ApiController
+    public class ComputerGameMoveController : ApiController
     {
         private readonly IGameService gameService;
 
-        public GameMoveController(IGameService gameService)
+        public ComputerGameMoveController(IGameService gameService)
         {
             this.gameService = gameService;
         }
 
-        [Route("api/game/{id}/move")]
-        public async Task<HttpResponseMessage> Post(GameMoveModel model)
+        [Route("api/game/{id}/computermove")]
+        public async Task<HttpResponseMessage> Post(long id)
         {
             var results = new GameMoveResultsModel();
             var player = ApplicationUser.GetCurrentPlayer(this.User);
+            
+            var game = await this.gameService.PerformComputerMoveAsync(id);
+            var computerPlayer = game.GetOtherPlayer(player.ID);
 
-            var point = new DomainModel.Point(model.MoveToX, model.MoveToY);
-            var game = await this.gameService.PerformMoveAsync(model.GameID, player.ID, model.TokenID, point);
-
-            results.Add(player, game);
+            results.Add(computerPlayer, game);
 
             return Request.CreateResponse(HttpStatusCode.OK, results);
         }

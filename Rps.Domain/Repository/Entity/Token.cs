@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Rps.Domain.Repository.Entity
     {
         public long ID { get; set; }
         public long GameID { get; set; }
+        [StringLength(128)]
         public string PlayerID { get; set; }
         public int TokenType { get; set; }
         public int Row { get; set; }

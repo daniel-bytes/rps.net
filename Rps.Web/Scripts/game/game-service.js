@@ -6,26 +6,38 @@ function GameMoveResource($resource) {
     return $resource('/api/game/:id/move', { id: '@GameID' });
 }
 
-function GameService(tokenService, gameResource, gameMoveResource) {
+function GameComputerMoveResource($resource) {
+    return $resource('/api/game/:id/computermove', { id: '@GameID' });
+}
+
+function GameService(tokenService, gameResource, gameMoveResource, gameComputerMoveResource) {
     return {
-        load: function (id, callback) {
-            return gameResource.get({ id: id }, function (data) {
-                var rows = [];
+        transform: function(data) {
+            var rows = [];
 
-                for (var r = 0; r < data.Rows; r++) {
-                    var row = [];
-                    for (var c = 0; c < data.Cols; c++) {
-                        var token = _(data.Tokens).find(function(x) { return x.Row === r && x.Col === c; });
-                        var tokenType = tokenService.tokenTypes.None;
+            for (var r = 0; r < data.Rows; r++) {
+                var row = [];
+                for (var c = 0; c < data.Cols; c++) {
+                    var token = _(data.Tokens).find(function (x) { return x.Row === r && x.Col === c; });
+                    var tokenType = tokenService.tokenTypes.None;
 
-                        if (token) {
-                            tokenType = tokenService.getTokenTypeByID(token.TokenType);
-                        }
-
-                        row.push({ id: token ? token.TokenID : 0, x: r, y: c, type: tokenType });
+                    if (token) {
+                        tokenType = tokenService.getTokenTypeByID(token.TokenType);
                     }
-                    rows.push(row);
+
+                    row.push({ id: token ? token.TokenID : 0, x: r, y: c, type: tokenType });
                 }
+                rows.push(row);
+            }
+
+            return rows;
+        },
+
+        load: function (id, callback) {
+            var $this = this;
+
+            return gameResource.get({ id: id }, function (data) {
+                var rows = $this.transform(data);
 
                 callback(rows);
             });
@@ -41,6 +53,21 @@ function GameService(tokenService, gameResource, gameMoveResource) {
                 MoveToY: y
             };
             return gameMoveResource.save(model, function (data) {
+                callback(data);
+            }, function (err) {
+                console.log(err);
+                var message = err.data && err.data.ExceptionMessage ? err.data.ExceptionMessage : "An error has occurred";
+                alert(message);
+            });
+        },
+
+        computerMove: function (gameid, callback) {
+            var self = this;
+
+            var model = {
+                GameID: gameid
+            };
+            return gameComputerMoveResource.save(model, function (data) {
                 callback(data);
             }, function (err) {
                 console.log(err);

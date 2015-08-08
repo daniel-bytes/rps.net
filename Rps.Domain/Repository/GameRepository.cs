@@ -45,7 +45,7 @@ namespace Rps.Domain.Repository
         {
             var results = new Dictionary<string, Game>();
 
-            var query = from game in context.Games
+            var query = from game in context.Games.AsNoTracking()
                         where (game.Player1ID == playerID || game.Player2ID == playerID)
                            && game.Active
                         orderby game.UpdatedAtUtc descending
@@ -145,11 +145,17 @@ namespace Rps.Domain.Repository
 
                 if (existingToken != null)
                 {
-                    existingToken.Row = currentToken.Row;
-                    existingToken.Col = currentToken.Col;
-                    existingToken.PlayerID = currentToken.PlayerID;
-                    existingToken.TokenType = currentToken.TokenType;
-                    existingToken.UpdatedAtUtc = timestamp;
+                    if (existingToken.Row != currentToken.Row ||
+                        existingToken.Col != currentToken.Col ||
+                        existingToken.PlayerID != currentToken.PlayerID ||
+                        existingToken.TokenType != currentToken.TokenType)
+                    {
+                        existingToken.Row = currentToken.Row;
+                        existingToken.Col = currentToken.Col;
+                        existingToken.PlayerID = currentToken.PlayerID;
+                        existingToken.TokenType = currentToken.TokenType;
+                        existingToken.UpdatedAtUtc = timestamp;
+                    }
                 }
                 else
                 {

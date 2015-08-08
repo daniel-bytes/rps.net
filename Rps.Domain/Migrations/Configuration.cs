@@ -10,6 +10,7 @@ namespace Rps.Domain.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(Rps.Domain.Repository.Entity.GameContext context)

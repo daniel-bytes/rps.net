@@ -105,11 +105,7 @@
 
             function BuildTable() {
                 table.innerHTML = "";
-
-                table.addEventListener('mouseleave', function (e) {
-                    CellRelease();
-                });
-
+                
                 $scope.tokens.forEach(function (row, rowidx) {
                     var tr = table.insertRow(rowidx);
                     row.forEach(function (token, cellidx) {
@@ -126,11 +122,19 @@
                             td.className = "gameboard-cell gameboard-cell-player";
 
                             td.addEventListener('mousedown', function (e) {
+                                if ($scope.locked === true) {
+                                    return;
+                                }
+
                                 CellClick(token, td);
                             });
                         }
 
                         td.addEventListener('mouseup', function (e) {
+                            if ($scope.locked === true) {
+                                return;
+                            }
+
                             if (CanSelect(token)) {
                                 $scope.$emit('gameboard.move', { attacker: activeToken, defender: token });
                             }
@@ -140,7 +144,17 @@
                 });
             }
 
-            $scope.$watch('tokens', function (value) {
+            table.addEventListener('mouseleave', function (e) {
+                if ($scope.locked === true) {
+                    return;
+                }
+
+                CellRelease();
+            });
+
+            $scope.$on('refresh', function (event, data) {
+                console.log("Refreshing board");
+                console.log($scope.tokens);
                 BuildTable();
             });
         }

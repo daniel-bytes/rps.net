@@ -3,5 +3,6 @@
     .directive('gameboard', GameBoardDirective)
     .factory('gameResource', ['$resource', GameResource])
     .factory('gameMoveResource', ['$resource', GameMoveResource])
-    .factory('gameService', ['tokenService', 'gameResource', 'gameMoveResource', GameService])
+    .factory('gameComputerMoveResource', ['$resource', GameComputerMoveResource])
+    .factory('gameService', ['tokenService', 'gameResource', 'gameMoveResource', 'gameComputerMoveResource', GameService])
     .factory('tokenService', TokenService);

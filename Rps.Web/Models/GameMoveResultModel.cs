@@ -31,6 +31,9 @@ namespace Rps.Web.Models
         public int MoveToX { get; set; }
         public int MoveToY { get; set; }
         public string Message { get; set; }
+        public int Rows { get; set; }
+        public int Cols { get; set; }
+        public GameTokenModel[] Tokens { get; set; }
 
         public GameMoveResultModel()
         {
@@ -38,15 +41,19 @@ namespace Rps.Web.Models
 
         public GameMoveResultModel(DomainModel.Player player, DomainModel.Game result)
         {
+            var defender = result.GameStatus.OtherPlayer;
+            var human = player.IsComputerControlled ? defender : player;
+
             this.GameID = result.ID;
             this.Result = result.GameStatus.CurrentMoveResult;
             this.AttackerTokenType = result.GameStatus.AttackerToken.TokenType;
             this.DefenderTokenType = result.GameStatus.DefenderToken == null ? DomainModel.TokenType.Empty : result.GameStatus.DefenderToken.TokenType;
             this.AttackerTokenID = result.GameStatus.CurrentMove.Token.ID;
             this.MoveToX = result.GameStatus.CurrentMove.MoveTo.X;
-            this.MoveToX = result.GameStatus.CurrentMove.MoveTo.Y;
-
-            var defender = result.GameStatus.OtherPlayer;
+            this.MoveToY = result.GameStatus.CurrentMove.MoveTo.Y;
+            this.Rows = result.GameBoard.NumRows;
+            this.Cols = result.GameBoard.NumCols;
+            this.Tokens = result.GameBoard.GetTokens().Select(token => new GameTokenModel(token, human.ID)).ToArray();
             
             switch(result.GameStatus.CurrentMoveResult)
             {
